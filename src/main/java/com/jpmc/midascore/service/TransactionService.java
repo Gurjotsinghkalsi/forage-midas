@@ -13,10 +13,12 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
+    private final IncentiveService incentiveService;
 
-    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository) {
+    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository, IncentiveService incentiveService) {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
+        this.incentiveService = incentiveService;
     }
 
     @Transactional
@@ -29,13 +31,15 @@ public class TransactionService {
             return false;
         }
 
+        float incentive = incentiveService.getIncentive(transaction);
+
         sender.setBalance(sender.getBalance() - transaction.getAmount());
-        recipient.setBalance(recipient.getBalance() + transaction.getAmount());
+        recipient.setBalance(recipient.getBalance() + transaction.getAmount() +  incentive);
 
         userRepository.save(sender);
         userRepository.save(recipient);
 
-        TransactionRecord record = new TransactionRecord(transaction.getAmount(), sender, recipient);
+        TransactionRecord record = new TransactionRecord(transaction.getAmount(), sender, recipient, incentive);
         transactionRepository.save(record);
 
         System.out.println("Transaction Successful" + record);

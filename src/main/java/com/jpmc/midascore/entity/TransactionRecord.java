@@ -12,6 +12,9 @@ public class TransactionRecord {
     @Column(nullable = false)
     private float amount;
 
+    @Column(nullable = false)
+    private float incentive;
+
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)
     private UserRecord sender;
@@ -26,10 +29,12 @@ public class TransactionRecord {
 
     public TransactionRecord(float amount,
                              UserRecord sender,
-                             UserRecord recipient) {
+                             UserRecord recipient,
+                             float incentive) {
         this.amount = amount;
         this.sender = sender;
         this.recipient = recipient;
+        this.incentive = incentive;
     }
 
     public Long getId() {
@@ -48,10 +53,14 @@ public class TransactionRecord {
         return recipient;
     }
 
+    public float getIncentive() {
+        return incentive;
+    }
+
     @Override
     public String toString() {
-        return String.format("TransactionRecord[id=%d, sender=%s, recipient=%s, amount=%f]",
-                id, sender.getName(), recipient.getName(), amount);
+        return String.format("TransactionRecord[id=%d, sender=%s, recipient=%s, amount=%f, incentive=%f]",
+                id, sender.getName(), recipient.getName(), amount, incentive);
     }
 
 }
